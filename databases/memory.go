@@ -3,6 +3,7 @@ package databases
 import (
 	"fmt"
 	"sync"
+	"time"
 	"todo-go/models"
 )
 
@@ -50,7 +51,10 @@ func (db *InMemoryDatabase) CreateTask(t models.Task) (uint64, error) {
 		id = uint64(length)
 	}
 
+	d := time.Now()
 	t.Id = uint64(id)
+	t.CreatedAt = d
+	t.UpdatedAt = d
 	db.Tasks = append(db.Tasks, t)
 
 	return uint64(id), nil
@@ -65,10 +69,12 @@ func (db *InMemoryDatabase) UpdateTask(t models.Task) error {
 	db.rwm.Lock()
 	defer db.rwm.Unlock()
 
+	d := time.Now()
 	task.Title = t.Title
 	task.Body = t.Body
 	task.Priority = t.Priority
 	task.Status = t.Status
+	task.UpdatedAt = d
 
 	return nil
 }

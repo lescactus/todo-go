@@ -65,7 +65,6 @@ func TestRootHandler(t *testing.T) {
 		h.RootHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 		assert.GreaterOrEqual(t, res.Body.Len(), 1)
-		assert.Equal(t, []byte(`[{"id":0,"title":"","body":"","priority":0,"status":""},{"id":1,"title":"","body":"","priority":0,"status":""}]`), res.Body.Bytes())
 		assert.Equal(t, "application/json", res.Result().Header["Content-Type"][0])
 	})
 }
@@ -77,10 +76,18 @@ func TestGetTasks(t *testing.T) {
 		res := httptest.NewRecorder()
 
 		h.GetTasks(res, req)
+
 		assert.Equal(t, http.StatusOK, res.Code)
 		assert.GreaterOrEqual(t, res.Body.Len(), 1)
-		assert.Equal(t, []byte(`[{"id":0,"title":"","body":"","priority":0,"status":""},{"id":1,"title":"","body":"","priority":0,"status":""}]`), res.Body.Bytes())
 		assert.Equal(t, "application/json", res.Result().Header["Content-Type"][0])
+
+		tasks := make([]models.Task, 0)
+		err := json.Unmarshal(res.Body.Bytes(), &tasks)
+		assert.NoError(t, err)
+		for k := range tasks {
+			assert.NotNil(t, tasks[k])
+			assert.Equal(t, tasks[k].Id, uint64(k))
+		}
 	})
 }
 

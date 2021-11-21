@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Priority int
 type Status string
 
@@ -21,6 +23,8 @@ type Task struct {
 	Body     string   `json:"body"`
 	Priority Priority `json:"priority"`
 	Status   Status   `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type TaskRepository interface {
