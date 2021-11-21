@@ -2,7 +2,9 @@ package databases
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 	"todo-go/models"
 
 	"github.com/stretchr/testify/assert"
@@ -79,6 +81,7 @@ func TestStoreCreateTask(t *testing.T) {
 		})
 		assert.NoError(t, err)
 		assert.Equal(t, id, newId)
+		assert.Equal(t, inMemoryDatabase.Tasks[id].CreatedAt, inMemoryDatabase.Tasks[id].UpdatedAt)
 	})
 
 	t.Run("Add a task with non existent id", func(t *testing.T) {
@@ -127,6 +130,26 @@ func TestStoreCreateTask(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(1), id)
 	})
+
+	t.Run("Add a task with a field CreatedAt set", func(t *testing.T) {
+		randomDate := randomDate()
+
+		id, err := inMemoryDatabase.CreateTask(models.Task{
+			CreatedAt: randomDate,
+		})
+		assert.NoError(t, err)
+		assert.NotEqual(t, inMemoryDatabase.Tasks[id].CreatedAt, randomDate)
+	})
+
+	t.Run("Add a task with a field UpdatedAt set", func(t *testing.T) {
+		randomDate := randomDate()
+
+		id, err := inMemoryDatabase.CreateTask(models.Task{
+			CreatedAt: randomDate,
+		})
+		assert.NoError(t, err)
+		assert.NotEqual(t, inMemoryDatabase.Tasks[id].UpdatedAt, randomDate)
+	})
 }
 
 func TestStoreUpdateTask(t *testing.T) {
@@ -146,6 +169,7 @@ func TestStoreUpdateTask(t *testing.T) {
 		assert.Equal(t, inMemoryDatabase.Tasks[id].Body, task.Body)
 		assert.Equal(t, inMemoryDatabase.Tasks[id].Priority, task.Priority)
 		assert.Equal(t, inMemoryDatabase.Tasks[id].Status, task.Status)
+		assert.NotEqual(t, inMemoryDatabase.Tasks[id].UpdatedAt, inMemoryDatabase.Tasks[id].CreatedAt)
 	})
 
 	t.Run("Update task with non existing id", func(t *testing.T) {
@@ -159,6 +183,28 @@ func TestStoreUpdateTask(t *testing.T) {
 		}
 		err := inMemoryDatabase.UpdateTask(task)
 		assert.Error(t, err)
+	})
+
+	t.Run("Update task with field UpdatedAt set", func(t *testing.T) {
+		id := uint64(0)
+		randomDate := randomDate()
+		task := models.Task{
+			Id:        id,
+			Title:     "Updated title",
+			Body:      "Updated body",
+			Priority:  models.Highest,
+			Status:    models.StatusInProgress,
+			UpdatedAt: randomDate,
+		}
+		err := inMemoryDatabase.UpdateTask(task)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(id), inMemoryDatabase.Tasks[id].Id)
+		assert.Equal(t, inMemoryDatabase.Tasks[id].Title, task.Title)
+		assert.Equal(t, inMemoryDatabase.Tasks[id].Body, task.Body)
+		assert.Equal(t, inMemoryDatabase.Tasks[id].Priority, task.Priority)
+		assert.Equal(t, inMemoryDatabase.Tasks[id].Status, task.Status)
+		assert.NotEqual(t, inMemoryDatabase.Tasks[id].UpdatedAt, inMemoryDatabase.Tasks[id].CreatedAt)
+		assert.NotEqual(t, inMemoryDatabase.Tasks[id].UpdatedAt, randomDate)
 	})
 }
 
@@ -176,6 +222,16 @@ func TestStoreDeleteTask(t *testing.T) {
 	})
 }
 
+func randomDate() time.Time {
+	// Generate a random between min and max
+	// ref: https://stackoverflow.com/questions/43495745/how-to-generate-random-date-in-go-lang/43497333
+	min := time.Date(1970, 1, 0, 0, 0, 0, 0, time.UTC).Unix()
+	max := time.Date(2020, 1, 0, 0, 0, 0, 0, time.UTC).Unix()
+	delta := max - min
+	sec := rand.Int63n(delta) + min
+	return time.Unix(sec, 0)
+}
+
 func benchmarkCreateTask(i int, b *testing.B) {
 	db := NewInMemoryDatabase()
 
@@ -186,9 +242,9 @@ func benchmarkCreateTask(i int, b *testing.B) {
 	}
 }
 
-func BenchmarkCreateTask1(b *testing.B) { benchmarkCreateTask(1, b)}
-func BenchmarkCreateTask2(b *testing.B) { benchmarkCreateTask(1, b)}
-func BenchmarkCreateTask3(b *testing.B) { benchmarkCreateTask(1, b)}
-func BenchmarkCreateTask10(b *testing.B) { benchmarkCreateTask(1, b)}
-func BenchmarkCreateTask100(b *testing.B) { benchmarkCreateTask(1, b)}
-func BenchmarkCreateTask1000(b *testing.B) { benchmarkCreateTask(1, b)}
+func BenchmarkCreateTask1(b *testing.B)    { benchmarkCreateTask(1, b) }
+func BenchmarkCreateTask2(b *testing.B)    { benchmarkCreateTask(1, b) }
+func BenchmarkCreateTask3(b *testing.B)    { benchmarkCreateTask(1, b) }
+func BenchmarkCreateTask10(b *testing.B)   { benchmarkCreateTask(1, b) }
+func BenchmarkCreateTask100(b *testing.B)  { benchmarkCreateTask(1, b) }
+func BenchmarkCreateTask1000(b *testing.B) { benchmarkCreateTask(1, b) }
