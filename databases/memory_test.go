@@ -248,3 +248,22 @@ func BenchmarkCreateTask3(b *testing.B)    { benchmarkCreateTask(1, b) }
 func BenchmarkCreateTask10(b *testing.B)   { benchmarkCreateTask(1, b) }
 func BenchmarkCreateTask100(b *testing.B)  { benchmarkCreateTask(1, b) }
 func BenchmarkCreateTask1000(b *testing.B) { benchmarkCreateTask(1, b) }
+
+func benchmarkGetTasks(i int, b *testing.B) {
+	db := NewInMemoryDatabase()
+
+	for n := 0; n < 100000; n++ {
+		_, _ = db.CreateTask(models.Task{})
+	}
+
+	for n := 0; n < b.N; n++ {
+		db.GetAllTasks()
+	}
+}
+
+func BenchmarkGetTasks1(b *testing.B)    { benchmarkGetTasks(1, b) }
+func BenchmarkGetTasks2(b *testing.B)    { benchmarkGetTasks(1, b) }
+func BenchmarkGetTasks3(b *testing.B)    { benchmarkGetTasks(1, b) }
+func BenchmarkGetTasks10(b *testing.B)   { benchmarkGetTasks(1, b) }
+func BenchmarkGetTasks100(b *testing.B)  { benchmarkGetTasks(1, b) }
+func BenchmarkGetTasks1000(b *testing.B) { benchmarkGetTasks(1, b) }
