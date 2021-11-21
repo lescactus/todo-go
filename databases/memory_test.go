@@ -70,7 +70,7 @@ func TestGetAllTasks(t *testing.T) {
 
 func TestStoreCreateTask(t *testing.T) {
 	t.Run("Add a task without id", func(t *testing.T) {
-		newId := uint64(3)
+		newId := uint64(2)
 		id, err := inMemoryDatabase.CreateTask(models.Task{
 			Title:    fmt.Sprintf("Test Title %d", newId),
 			Body:     fmt.Sprintf("Test body %d", newId),
@@ -82,7 +82,7 @@ func TestStoreCreateTask(t *testing.T) {
 	})
 
 	t.Run("Add a task with non existent id", func(t *testing.T) {
-		newId := uint64(4)
+		newId := uint64(3)
 		id, err := inMemoryDatabase.CreateTask(models.Task{
 			Id:       newId,
 			Title:    fmt.Sprintf("Test Title %d", newId),
@@ -95,7 +95,7 @@ func TestStoreCreateTask(t *testing.T) {
 	})
 
 	t.Run("Add a task with existent id", func(t *testing.T) {
-		newId := uint64(4)
+		newId := uint64(3)
 		id, err := inMemoryDatabase.CreateTask(models.Task{
 			Id:       newId,
 			Title:    fmt.Sprintf("Test Title %d", newId),
@@ -107,16 +107,25 @@ func TestStoreCreateTask(t *testing.T) {
 		assert.Equal(t, id, newId+1)
 	})
 
-	t.Run("Add a task with an empty InMemoryDatabase", func(t *testing.T) {
+	t.Run("Add tasks with an empty InMemoryDatabase", func(t *testing.T) {
 		db := &InMemoryDatabase{Tasks: []models.Task{}}
 		id, err := db.CreateTask(models.Task{
-			Title:    "Test Title",
+			Title:    "Test Title 1",
 			Body:     "Test body",
 			Priority: models.Highest,
 			Status:   models.StatusInProgress,
 		})
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(0), id)
+
+		id, err = db.CreateTask(models.Task{
+			Title:    "Test Title 2",
+			Body:     "Test body",
+			Priority: models.Highest,
+			Status:   models.StatusInProgress,
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(1), id)
 	})
 }
 
