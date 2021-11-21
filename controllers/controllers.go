@@ -127,10 +127,20 @@ func (h *BaseHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 
 	var t models.Task
 	if err := json.Unmarshal(rBody, &t); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	// Get id from URL and parse it to uint64
+	muxID := mux.Vars(r)["id"]
+	id, err := strconv.ParseUint(muxID, 0, 0)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
+	t.Id = id
 
 	if err := h.taskRepo.UpdateTask(t); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
