@@ -44,7 +44,7 @@ func (db *InMemoryDatabase) CreateTask(t models.Task) (uint64, error) {
 
 	var id uint64
 	length := len(db.Tasks)
-	// First id is 1
+	// First id is 0
 	if length == 0 {
 		id = 0
 	} else {

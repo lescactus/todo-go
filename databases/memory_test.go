@@ -22,8 +22,8 @@ var (
 			},
 			{
 				Id:       1,
-				Title:    "Test Title 0",
-				Body:     "Test body 0",
+				Title:    "Test Title 1",
+				Body:     "Test body 1",
 				Priority: models.Low,
 				Status:   models.StatusDone,
 			},
@@ -243,16 +243,16 @@ func benchmarkCreateTask(i int, b *testing.B) {
 }
 
 func BenchmarkCreateTask1(b *testing.B)    { benchmarkCreateTask(1, b) }
-func BenchmarkCreateTask2(b *testing.B)    { benchmarkCreateTask(1, b) }
-func BenchmarkCreateTask3(b *testing.B)    { benchmarkCreateTask(1, b) }
-func BenchmarkCreateTask10(b *testing.B)   { benchmarkCreateTask(1, b) }
-func BenchmarkCreateTask100(b *testing.B)  { benchmarkCreateTask(1, b) }
-func BenchmarkCreateTask1000(b *testing.B) { benchmarkCreateTask(1, b) }
+func BenchmarkCreateTask2(b *testing.B)    { benchmarkCreateTask(2, b) }
+func BenchmarkCreateTask3(b *testing.B)    { benchmarkCreateTask(3, b) }
+func BenchmarkCreateTask10(b *testing.B)   { benchmarkCreateTask(10, b) }
+func BenchmarkCreateTask100(b *testing.B)  { benchmarkCreateTask(10, b) }
+func BenchmarkCreateTask1000(b *testing.B) { benchmarkCreateTask(1000, b) }
 
 func benchmarkGetTasks(i int, b *testing.B) {
 	db := NewInMemoryDatabase()
 
-	for n := 0; n < 100000; n++ {
+	for n := 0; n < i; n++ {
 		_, _ = db.CreateTask(models.Task{})
 	}
 
@@ -262,8 +262,8 @@ func benchmarkGetTasks(i int, b *testing.B) {
 }
 
 func BenchmarkGetTasks1(b *testing.B)    { benchmarkGetTasks(1, b) }
-func BenchmarkGetTasks2(b *testing.B)    { benchmarkGetTasks(1, b) }
-func BenchmarkGetTasks3(b *testing.B)    { benchmarkGetTasks(1, b) }
-func BenchmarkGetTasks10(b *testing.B)   { benchmarkGetTasks(1, b) }
-func BenchmarkGetTasks100(b *testing.B)  { benchmarkGetTasks(1, b) }
-func BenchmarkGetTasks1000(b *testing.B) { benchmarkGetTasks(1, b) }
+func BenchmarkGetTasks2(b *testing.B)    { benchmarkGetTasks(2, b) }
+func BenchmarkGetTasks3(b *testing.B)    { benchmarkGetTasks(3, b) }
+func BenchmarkGetTasks10(b *testing.B)   { benchmarkGetTasks(10, b) }
+func BenchmarkGetTasks100(b *testing.B)  { benchmarkGetTasks(100, b) }
+func BenchmarkGetTasks1000(b *testing.B) { benchmarkGetTasks(1000, b) }
