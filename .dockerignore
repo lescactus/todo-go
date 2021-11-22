@@ -59,3 +59,4 @@ todo-go
 locustfile.py
 .gitignore
 .git
+*.test
